@@ -16,8 +16,14 @@ export const data = [
         points: 5,
       },
       {
-        id: 24,
+        id: 25,
         title: "task 3",
+        status: "completed",
+        points: 5,
+      },
+      {
+        id: 26,
+        title: "task 4",
         status: "completed",
         points: 5,
       },
@@ -40,7 +46,7 @@ export const data = [
         points: 5,
       },
       {
-        id: 24,
+        id: 25,
         title: "task 3",
         status: "completed",
         points: 5,
@@ -64,7 +70,7 @@ export const data = [
         points: 5,
       },
       {
-        id: 24,
+        id: 25,
         title: "task 3",
         status: "completed",
         points: 5,
@@ -88,7 +94,7 @@ export const data = [
         points: 5,
       },
       {
-        id: 24,
+        id: 25,
         title: "task 3",
         status: "completed",
         points: 5,
