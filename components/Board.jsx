@@ -7,19 +7,26 @@ import { getTasks } from '@/store/taskSlice';
 
 const Board = () => {
   const dispatch = useDispatch();
-  const {data} = useSelector(state=>state.task)
-  const [categories, setCategories] = useState(data);
+  const [categories, setCategories] = useState([]);
   const [isAdd, setIsAdd] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const {data, isLoading } = useSelector(state=>state.task);
+  const tasksArr = data?.data?.tasks;
 
   useEffect(()=>{
-      dispatch(getTasks());
-  },[])
-  console.log("Tasks:", data)
+      dispatch(getTasks());     
+  },[dispatch]);
+  useEffect(() => {
+    // if (data && data?.data && tasksArr.length>0 ) {
+      setCategories(tasksArr);
+    // }
+  }, [tasksArr]);
+
+  console.log("Tasks:", categories)
   const handleAdd = () => {
     if (newCategory.trim() !== "") {
         const newCategoryId = Date.now();
-        const newCategoryObj = { id: newCategoryId, title: newCategory, tasks: [] };
+        const newCategoryObj = { categoryId: newCategoryId, category: newCategory, tasks: [] };
         setCategories(prevCategories => [...prevCategories, newCategoryObj]);
         setNewCategory("");
         setIsAdd(false);
@@ -28,21 +35,21 @@ const Board = () => {
   const handleEdit = (categoryId, editedTitle) => {
     setCategories(prevCategories =>
       prevCategories.map(category =>
-        category.id === categoryId ? { ...category, title: editedTitle } : category
+        category.categoryId  === categoryId ? { ...category, category: editedTitle } : category
       )
     );
   };
 
   const handleDelete = (categoryId) => {
     setCategories(prevCategories =>
-      prevCategories.filter(category => category.id !== categoryId)
+      prevCategories.filter(category => category.categoryId !== categoryId)
     );
   };
 
   return (
     <section className='w-full min-h-screen h-full p-5 flex flex-col items-start justify-start gap-4'>
       <div className='w-full flex items-center gap-2'>
-        <button onClick={()=>setIsAdd(p => !p)} className='bg-gray-200 p-2 text-end'>Add Category</button>
+        <button onClick={()=>setIsAdd(!isAdd)} className='bg-gray-200 p-2 text-end'>{isAdd ? "cancel" :"Add Category"}</button>
        { 
        isAdd &&
        <>
@@ -57,14 +64,14 @@ const Board = () => {
        }
       </div>
       <div className='flex w-full h-[95vh] items-start justify-start gap-4 p-2'>
-      {categories.map((category) =>(
+      {categories?.map((category) =>(
           <TaskList
-          listTitle={category.title}
-          categories={categories}
-          key={category.id}
-          categoryId={category.id}
+          listTitle={category?.category}
+          categories={category.tasks}
+          key={category?.categoryId}
+          categoryId={category?.categoryId}
           handleEdit={handleEdit}
-          handleDelete={() => handleDelete(category.id)}
+          handleDelete={() => handleDelete(category?.categoryId)}
         />
       ))}
       </div>

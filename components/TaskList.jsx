@@ -4,31 +4,37 @@ import { MdEdit } from "react-icons/md";
 import { MdDone } from "react-icons/md";
 import { CiCirclePlus } from "react-icons/ci";
 import TaskItem from "./TaskItem";
+import { addTask, updateTaskStatus } from "@/store/taskSlice";
+import { useDispatch } from "react-redux";
 
-const TaskList = ({listTitle, categoryId,handleEdit, handleDelete, categories, data, setData}) => {
+const TaskList = ({listTitle, categoryId, handleEdit, handleDelete, categories, data, setData}) => {
+    const dispatch = useDispatch();
     const[isEdit, setIsEdit] = useState(false);
     const [editedTitle, setEditeditle] = useState(listTitle);
     const [addNew, setAddNew] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState("");
-    const [tasks, setTasks] = useState(categories.find(category => category.id === categoryId).tasks);
+    const [tasks, setTasks] = useState(categories);
 
     const handleSave = () => {
         handleEdit(categoryId, editedTitle);
     setIsEdit(false);
     }
     const handleAddTask = () => {
-        setAddNew(true);
         if (newTaskTitle.trim() !== "") {
             const newTask = {
-                id: Date.now(), 
+                taskId: Date.now(), 
                 title: newTaskTitle,
-                status: "pending", 
-                points: 5, 
+                status: "Dev in progress", 
+                storyPoints: 5,
+                subtasks : []
             };
-            setTasks(prevTasks => [...prevTasks, newTask]);
-            setNewTaskTitle("");
+            dispatch(addTask(newTask));
         }
+        setNewTaskTitle("");
+        setAddNew(false)
+        console.log("New Task :", tasks)
     };
+    
     const handleStatusChange = (taskId, newStatus) => {
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
@@ -46,16 +52,16 @@ const TaskList = ({listTitle, categoryId,handleEdit, handleDelete, categories, d
         <p className="text-center">{listTitle}</p>
         }
         <div className="p-2 flex gap-2">
-            {isEdit || <button onClickCapture={handleAddTask}><CiCirclePlus size={23}/></button>}
+            {isEdit || <button onClick={()=>setAddNew(true)}><CiCirclePlus size={23}/></button>}
             {isEdit ? <button onClick={handleSave}><MdDone size={23}/></button> : 
             <button onClick={()=>setIsEdit(true)}><MdEdit fill="skyblue" size={23}/></button>
             }
-            <button onClick={handleDelete}><MdDelete fill="red" size={23}/></button>
+            <button onClick={()=>handleDelete(categoryId)}><MdDelete fill="red" size={23}/></button>
         </div>
         </header>
     <div className="p-2 w-full flex flex-col gap-2">
     {addNew && (
-                <div className="p-2">
+                <div className="p-2 flex items-center gap-2">
                     <input
                         type="text"
                         className="p-1 rounded border text-black border-slate-500 outline-none"
@@ -63,14 +69,11 @@ const TaskList = ({listTitle, categoryId,handleEdit, handleDelete, categories, d
                         value={newTaskTitle}
                         onChange={(e) => setNewTaskTitle(e.target.value)}
                     />
+                   <button onClick={handleAddTask}><MdDone size={23}/></button>
                 </div>
             )}
-            {categories
-                    .filter(category => category.id === categoryId)
-                    .map(category => (
-                        category.tasks.map(task => (
-                            <TaskItem key={task.id} task={task} handleStatusChange={handleStatusChange}/>
-                        ))
+            {categories?.map((task,index) => (
+                            <TaskItem key={index} task={task} handleStatusChange={handleStatusChange}/>
                     ))} 
     </div> 
     </section>

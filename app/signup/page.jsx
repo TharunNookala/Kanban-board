@@ -3,10 +3,11 @@ import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import Link from 'next/link'
 import React, { useState } from 'react';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation'
 import axios from "axios";
 
 const Signup = () => {
+  const router = useRouter();
   const initialValues = {
     email: "",
     password:  "",
@@ -53,15 +54,11 @@ const validate = (values) => {
       setIsSubmitting(true);
       
       try {
-        const response = await axios.post("http://localhost:8000/signup", {
-          email: form.email,
-          password: form.password,
-          confirmPassword: form.confirmPassword
-        });
+        const response = await axios.post("http://localhost:8000/api/v1/users", form);
   
         if (response.status===200) {   
-          // redirect('/login');
           console.log('Form submitted successfully');
+          
         } else {
           console.error('Failed to submit form');
         }
@@ -73,6 +70,7 @@ const validate = (values) => {
         setHideConfirmPassword(true)
         setForm(initialValues);
       }
+      router.push('/');
     }
   return (
     <section className='w-screen h-screen flex flex-col items-center justify-start gap-10'>
@@ -81,7 +79,7 @@ const validate = (values) => {
       </h1>
     <div className='w-[400px] h-[400px] border rounded-lg border-black flex items-center justify-center flex-col'>
         <h2 className='p-2 bg-green-400 w-full text-center font-bold text-xl rounded-t-lg'>Signup here</h2>
-        <form className='w-full h-full flex flex-col items-center justify-center gap-5'>
+        <form action="POST" className='w-full h-full flex flex-col items-center justify-center gap-5'>
           <div className='flex flex-col items-start justify-center gap-1'>
           
             <input 

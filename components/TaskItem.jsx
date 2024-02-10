@@ -4,9 +4,10 @@ const TaskItem = ({ task, handleStatusChange }) => {
     const [edit, setEdit] = useState(false)
     const [taskData, setTaskData] = useState({
         title: task.title,
-        points: task.points,
+        storyPoints: task.storyPoints,
         description: task.description,
-        status: task.status
+        status: task.status,
+        subtasks : task.subtasks,
     });
     const handleStatusSelect = (e) => {
         const newStatus = e.target.value;
@@ -34,20 +35,28 @@ const TaskItem = ({ task, handleStatusChange }) => {
                        
             <p className='flex items-center justify-between p-2'>
                     {
-                        edit ? <input type="number" name="points" value={taskData.points} onChange={handleTaskDataChange} className='w-full outline-none'/>
-                             : <span>Story points : {taskData.points}</span>
+                        edit ? <input type="number" name="storyPoints" value={taskData.storyPoints} onChange={handleTaskDataChange} className='p-1 outline-none'/>
+                             : <span>Story points : {taskData.storyPoints}</span>
                     }
                     {edit || <select value={taskData.status} onChange={handleStatusSelect} className='bg-transparent'>
-                        <option value="pending">Pending</option>
-                        <option value="in progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="closed">Closed</option>
+                        <option value="Dev in progress">Dev in progress</option>
+                        <option value="QA in progress">QA In Progress</option>
+                        <option value="Rework">Rework</option>
+                        <option value="Closed">Closed</option>
                     </select>}
                 </p>
                 {
-                edit ? <textarea name="description" placeholder='Add description here...' value={taskData.description} onChange={handleTaskDataChange} className='w-full p-2'/>
+                edit ? <textarea name="description" placeholder='Add description here...' value={taskData.description} onChange={handleTaskDataChange} className='outline-none w-full p-2'/>
                      :  <p className='w-full p-1'>{taskData.description}</p>
                 }
+                <ul className='p-2 flex flex-col justify-center gap-1'>
+                {task.subtasks.map(subtask => (
+                  <li key={subtask} className='flex gap-3 items-center'>
+                    <p className='text-sm bg-slate-400 px-1 rounded'>{subtask}</p>
+                    {edit && <button className='text-xs bg-slate-200 rounded-full px-1'>x</button>}
+                </li>
+                ))}
+              </ul>
         </div>
     );
 };
